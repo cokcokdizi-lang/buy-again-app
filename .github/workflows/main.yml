@@ -26,8 +26,7 @@ jobs:
       - name: Build APK
         working-directory: android-project/TEST_BuyAgain_4.1.3_Project
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
