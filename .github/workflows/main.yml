@@ -1,0 +1,28 @@
+name: Build BuyAgain APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Unzip Android project
+        run: |
+          mkdir android-project
+          unzip TEST_BuyAgain*.zip -d android-project
+
+      - name: Build
