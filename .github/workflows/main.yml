@@ -26,3 +26,7 @@ jobs:
           unzip TEST_BuyAgain*.zip -d android-project
 
       - name: Build
+      run: |
+      cd android-project/TEST_BuyAgain_4.1.3_Project
+      chmod +x gradlew
+      ./gradlew assembleDebug
