@@ -1,0 +1,415 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Buy Again / Don't Buy Again</title>
+<style>
+:root{--g:#078b45;--r:#e1262f;--gs:#e3f6e9;--rs:#fde8e8;--l:#d5d9de;--m:#343a40}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7f8;color:#090909;font-weight:700}
+.app{max-width:620px;margin:auto;min-height:100vh;background:#fff;padding-bottom:82px}
+header{padding:15px;border-bottom:1px solid var(--l);position:sticky;top:0;background:#fff;z-index:5}
+.brand{display:flex;gap:7px;align-items:center;white-space:nowrap}.brandcopy{min-width:0;flex:1}.logo{width:48px;height:48px;border:2px solid #cfd4da;border-radius:50%;display:flex;justify-content:space-evenly;align-items:center;font-size:26px;font-weight:900;flex:0 0 auto}.logo span:first-child{color:var(--g)}.logo span:last-child{color:var(--r)}
+h1{font-size:clamp(15px,4.4vw,20px);margin:0;font-weight:900;color:#050505;white-space:nowrap}.tag{margin:4px 0 0;color:#087c3e;font-size:14px;font-weight:900;white-space:normal}.settingsTop{border:0;background:#fff;font-size:25px;padding:5px}main{padding:16px}.hidden{display:none!important}
+input,textarea,select{width:100%;padding:13px;border:1px solid var(--l);border-radius:13px;font:inherit}
+textarea{min-height:85px}.primary,.secondary,.danger{width:100%;padding:14px;border-radius:14px;font-weight:bold;font:inherit}
+.primary{border:0;background:var(--g);color:#fff}.secondary{border:1px solid var(--l);background:#fff}.danger{border:1px solid #efb4b4;background:var(--rs);color:#982c2c}
+.welcome{padding:18px;border:1px solid var(--l);border-radius:18px;background:linear-gradient(135deg,#f4fbf7,#fff4f4);margin-bottom:15px}
+.row{display:flex;gap:8px;overflow:auto;margin:10px 0}.pill{white-space:nowrap;padding:9px 12px;border-radius:999px;border:1px solid var(--l);background:#fff;font-weight:bold}
+.pill.active.all{background:#17202a;color:#fff}.pill.active.good{background:var(--g);color:#fff}.pill.active.bad{background:var(--r);color:#fff}
+.head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.head h2{margin:0;font-size:18px}.muted{color:#252a30;font-size:13px;font-weight:700}
+.hscroll{display:flex;gap:12px;overflow:auto}.mini{width:165px;flex:0 0 auto;border:1px solid var(--l);border-radius:16px;padding:10px}.mini img{width:100%;height:110px;object-fit:cover;border-radius:12px;background:#eee}.mini h3{font-size:15px;margin:8px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card{display:flex;gap:12px;align-items:center;border:1px solid var(--l);border-radius:17px;padding:11px;margin-bottom:11px}.thumb{width:112px;height:96px;object-fit:cover;border-radius:14px;background:#eee}.info{flex:1;min-width:0}.info h3{margin:0 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:bold}.badge.good{background:var(--gs);color:var(--g)}.badge.bad{background:var(--rs);color:var(--r)}.meta{font-size:13px;color:#171a1e;margin-top:6px;font-weight:700}
+.photo{border:2px dashed #cfd5dc;border-radius:18px;padding:18px;text-align:center}.photoopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.photoopts label{padding:13px;border:1px solid var(--l);border-radius:13px;font-weight:bold}.preview{width:100%;max-height:260px;object-fit:contain;border-radius:14px;margin-top:12px}
+.group{margin:15px 0}.group label{display:block;font-weight:bold;margin-bottom:7px}.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice button{padding:18px;border:2px solid transparent;border-radius:15px;font-weight:bold}.choice .good{background:var(--g);color:#fff}.choice .bad{background:var(--r);color:#fff}.choice .selected{transform:translateY(4px);box-shadow:inset 0 4px 7px rgba(0,0,0,.28),0 0 0 4px rgba(0,0,0,.12);border-color:#050505}.choice button{transition:transform .08s,box-shadow .08s}
+
+.cat-picker{position:relative}
+.cat-button{width:100%;padding:13px;border:1px solid var(--l);border-radius:13px;background:#fff;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.cat-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:25;background:#fff;border:1px solid var(--l);border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,.14);max-height:280px;overflow:auto;padding:6px}
+.cat-option{width:100%;padding:12px;border:0;background:#fff;text-align:left;border-radius:10px;font-weight:900;color:#050505}
+.cat-option:active,.cat-option:hover{background:#f3f5f7}
+.detailphoto{width:100%;max-height:390px;object-fit:contain;border-radius:18px;background:#eee}.detailrow{padding:12px 0;border-bottom:1px solid var(--l)}.detailrow strong{display:block;color:var(--m);font-size:13px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.empty{text-align:center;color:var(--m);padding:35px 15px}.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);background:#17202a;color:white;padding:12px 16px;border-radius:999px;z-index:20}
+.modal{position:fixed;inset:0;background:#000d;display:grid;place-items:center;z-index:30;padding:20px}.modal img{max-width:100%;max-height:88vh}.modal button{position:absolute;top:18px;right:18px;border:0;background:#fff;border-radius:50%;width:42px;height:42px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:620px;width:100%;display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid var(--l)}nav button{border:0;background:#fff;padding:11px;color:var(--m);font-weight:bold}
+
+.homeChoices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}.homeChoice{border:2px solid transparent;border-radius:18px;padding:14px 9px;text-align:left;font-weight:900;font-size:16px}.homeChoice small{display:block;margin-top:5px;font-size:14px;color:#111;font-weight:900}.homeChoice.good{background:var(--gs);border-color:#b9e4c8;color:#087c3e}.homeChoice.bad{background:var(--rs);border-color:#f0c2c2;color:#bd1820}
+.searchWrap{display:flex;align-items:center;gap:7px}.searchWrap input{flex:1;font-weight:800}.searchGo{width:48px;height:46px;flex:0 0 48px;border:1px solid var(--l);border-radius:13px;background:#fff;font-size:22px;font-weight:900}
+.cat-search{position:sticky;top:0;background:#fff;padding:5px;z-index:2}.cat-search-wrap{position:relative}.cat-search-wrap:before{content:'🔍';position:absolute;right:12px;top:12px}.cat-search-wrap input{padding-right:42px;font-weight:800}
+.viewDetails{display:inline-block;margin-top:8px;border:0;background:transparent;color:#111;text-decoration:underline;font-weight:900;padding:4px 0;font-size:13px}
+input,textarea,select,button{color:#080808;font-weight:700}.resultNotice{font-weight:900;color:#050505}
+@media(max-width:390px){.logo{width:44px;height:44px;font-size:23px}h1{font-size:15px}.brand{gap:5px}}
+
+.topTools{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}.topTools .homeMarker{margin:0}.languageBox{display:flex;align-items:center;gap:6px;font-weight:900}.languageBox select{width:auto;padding:7px 28px 7px 9px;border-radius:10px;font-weight:900}.scannerBox{position:fixed;inset:0;background:#000b;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px}.scannerBox.hidden{display:none}.scannerPanel{background:#fff;border-radius:18px;padding:16px;width:min(94vw,520px)}#scannerVideo{width:100%;max-height:55vh;background:#111;border-radius:14px}.scanStatus{margin:10px 0;font-weight:800}.resultsTop{background:#fff;border:1px solid var(--l);border-radius:16px;padding:14px;margin-bottom:12px}.resultsTop .head{margin:0}.homeMarker{font-weight:900;margin:0 0 10px;font-size:15px}.recentSearches{margin:8px 0 12px}.recentSearches summary{cursor:pointer;font-weight:900}.recentSearchBtn{margin:5px 5px 0 0;padding:8px 10px;border:1px solid var(--l);border-radius:12px;background:#fff}.pickerHelp{position:fixed;inset:0;background:#0008;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}.pickerHelp.hidden{display:none}.pickerHelpBox{background:#fff;max-width:390px;border-radius:18px;padding:18px;width:100%}.pickerHelpBox h3{margin-top:0}.restoreChoices{display:flex;gap:8px;flex-wrap:wrap}.restoreChoices button{flex:1;min-width:130px}nav button:active,.primary:active,.secondary:active,.homeChoice:active{transform:translateY(3px) scale(.97);box-shadow:inset 0 3px 6px #0003}nav button{transition:transform .07s,box-shadow .07s}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div class="logo"><span>✓</span><span>✕</span></div><div class="brandcopy"><h1 data-i18n="appName">Buy Again / Don't Buy Again</h1><p class="tag" data-i18n="tagline">Your information to Yourself</p></div><button id="settingsTop" class="settingsTop" aria-label="Settings">⚙</button></div></header>
+<main>
+<section id="home"><div class="topTools"><div class="homeMarker" data-i18n="home">⌂ Home</div><label class="languageBox"><span data-i18n="language">Language</span><select id="languageSelect"><option value="en">English</option><option value="tr">Türkçe</option></select></label></div>
+<div id="welcome" class="welcome hidden"><h2 data-i18n="welcome">Welcome to Buy Again / Don't Buy Again</h2><p data-i18n="welcomeText"><b>Add your item before you forget.</b><br>It's quick and easy. Photos are optional.</p><button id="firstAdd" class="primary" data-i18n="addFirst">＋ Add Your First Item</button></div>
+<div class="searchWrap"><input id="q" placeholder="Search your items" data-i18n-placeholder="searchItems" enterkeyhint="search"><button id="searchGo" class="searchGo" type="button">🔍</button></div><details id="recentSearches" class="recentSearches"><summary data-i18n="recentSearches">Recent Searches ▼</summary><div id="recentSearchList"></div></details><div class="homeChoices"><button class="homeChoice good" data-home-filter="good">✓ &nbsp; <span data-i18n="buyAgain">Buy Again</span><small><span id="goodCount">0</span> <span data-i18n="items">items</span></small></button><button class="homeChoice bad" data-home-filter="bad">✕ &nbsp; <span data-i18n="dontBuyAgain">Don't Buy Again</span><small><span id="badCount">0</span> <span data-i18n="items">items</span></small></button></div>
+<div class="row"><button class="pill active all" data-mode="everything" data-i18n="searchEverything">Search everything</button><button class="pill" data-mode="category" data-i18n="searchCategories">Search categories</button></div>
+<div class="row"><button class="pill active all" data-filter="all" data-i18n="all">All</button><button class="pill" data-filter="good" data-i18n="buyAgain">Buy Again</button><button class="pill" data-filter="bad" data-i18n="dontBuyAgain">Don't Buy Again</button></div>
+<select id="sort"><option value="newest" data-i18n="newest">Newest first</option><option value="oldest" data-i18n="oldest">Oldest first</option><option value="az">A–Z</option><option value="za">Z–A</option><option value="category" data-i18n="categorySort">Category</option></select>
+<div style="height:10px"></div><button id="add" class="primary" data-i18n="addItem">＋ Add Item</button>
+<div class="head"><h2 data-i18n="recentlyAdded">Recently Added</h2><span class="muted" data-i18n="latest3">Latest 3</span></div><div id="recent"></div>
+
+<div class="head"><h2 data-i18n="allItems">All Items</h2><span id="count" class="muted"></span></div><div class="muted" style="margin:-4px 0 10px" data-i18n="everySaved">Every saved item appears below.</div><div id="list"></div>
+</section>
+
+<section id="results" class="hidden"><div class="resultsTop"><button id="resultsHome" class="secondary" data-i18n="home">⌂ Home</button><div class="head"><h2 id="resultsTitle">Search Results</h2><span id="resultsCount" class="resultNotice"></span></div></div><div id="resultsList"></div></section>
+
+<section id="form" class="hidden">
+<div class="photo"><b>Photo <span class="muted">(optional)</span></b><div class="photoopts"><label for="cam"><span data-i18n="takePhoto">📷 Take Photo ⭐ Recommended</span></label><button type="button" id="chooseExisting" class="secondary"><span data-i18n="choosePhoto">🖼 Choose Existing Photo</span></button></div><input hidden id="cam" type="file" accept="image/*" capture="environment"><input hidden id="gal" type="file">
+<button type="button" id="scanBarcode" class="secondary" style="margin-top:10px;border-color:#8b5cf6;color:#6d28d9">▥ <span data-i18n="scanBarcode">Scan Barcode</span></button>
+<img id="prev" class="preview hidden"><button id="quickSave" class="primary hidden" style="margin-top:10px;background:#17202a" data-i18n="savePhotoNow">Save Photo Now</button></div>
+<div class="group"><label>Product name <span class="muted">(optional if saving photo only)</span></label><input id="name"></div>
+<div class="group"><label data-i18n="wouldBuy">Would you buy it again?</label><div class="choice"><button type="button" id="yes" class="good" data-i18n="buyAgainCaps">✓ BUY AGAIN</button><button type="button" id="no" class="bad" data-i18n="dontBuyAgainCaps">✕ DON'T BUY AGAIN</button></div></div>
+<div class="group"><label data-i18n="notes">Notes (optional)</label><textarea id="notes"></textarea></div>
+<div class="group"><label data-i18n="brand">Brand (optional)</label><input id="brand"></div>
+<div class="group"><label data-i18n="category">Category (optional)</label>
+<div class="cat-picker">
+  <button type="button" id="catButton" class="cat-button"><span id="catLabel">No category</span><span>▼</span></button>
+  <div id="catMenu" class="cat-menu hidden"><div class="cat-search"><div class="cat-search-wrap"><input id="catSearch" placeholder="Search categories"></div></div><div id="catOptions"></div></div>
+</div>
+<input id="customCat" class="hidden" style="margin-top:8px" placeholder="Type your category">
+</div>
+<div class="group"><label data-i18n="boughtFrom">Bought from (optional)</label><input id="shop"></div>
+<button id="save" class="primary" data-i18n="saveItem">Save Item</button><button id="cancel" class="secondary" style="margin-top:10px" data-i18n="cancel">Cancel</button>
+</section>
+
+<section id="detail" class="hidden"><img id="dphoto" class="detailphoto"><h2 id="dname"></h2><div id="dbadge"></div><div id="dfields"></div><div class="actions"><button id="edit" class="secondary" data-i18n="edit">Edit</button><button id="del" class="danger" data-i18n="delete">Delete</button></div></section>
+
+<section id="settings" class="hidden">
+  <h2 data-i18n="settings">Settings</h2>
+  <div class="group">
+    <button id="backupItems" class="secondary" data-i18n="backup">💾 Backup My Items</button>
+    <div class="muted" style="margin-top:6px">Create a copy of your saved items, photos, notes and categories.</div>
+  </div>
+  <div class="group">
+    <button id="restoreItems" class="secondary" data-i18n="restore">♻️ Restore My Items</button>
+    <div class="muted" style="margin-top:6px">Restore your items from a previous backup.</div>
+    <input id="restoreFile" type="file" accept=".badb,.json,application/json" hidden>
+  </div>
+  <div class="group">
+    <button id="aboutApp" class="secondary" data-i18n="about">ℹ️ About the App</button>
+  </div>
+  <div id="aboutBox" class="hidden" style="padding:14px;border:1px solid var(--l);border-radius:14px">
+    <b>Buy Again / Don't Buy Again</b><br>
+    Version 4.1.3<br><br>
+    Your information stays on your device unless you choose to create a backup.
+  </div>
+</section>
+
+</main>
+<div id="pickerHelp" class="pickerHelp hidden"><div class="pickerHelpBox"><h3>Finding your photo</h3><p>Your Gallery or photo picker will open. Look for 🔍 <b>Search</b> to find a photo. You may need to pull or swipe down to see Search.</p><label><input id="pickerDontShow" type="checkbox" style="width:auto"> Don't show this again</label><div style="height:12px"></div><button id="pickerContinue" class="primary">Continue</button></div></div>
+<nav><button data-view="home">⌂<br><span data-i18n="navHome">Home</span></button><button data-view="form">＋<br><span data-i18n="navAdd">Add</span></button><button id="searchNav">🔍<br><span data-i18n="navSearch">Search</span></button></nav>
+</div>
+<div id="scannerBox" class="scannerBox hidden"><div class="scannerPanel"><h2 data-i18n="scanBarcode">Scan Barcode</h2><video id="scannerVideo" playsinline></video><div id="scanStatus" class="scanStatus">Point the camera at the product barcode.</div><button id="stopScan" class="secondary" data-i18n="cancel">Cancel</button></div></div>
+<div id="toast" class="toast hidden">Item saved successfully</div>
+<div id="modal" class="modal hidden"><button id="close">✕</button><img id="big"></div>
+<script>
+let db,items=[],seen=[],decision="",photo=null,editId=null,currentBarcode="",mode="everything",filter="all",saving=false,categoryValue="";const $=x=>document.getElementById(x);
+function openDB(){return new Promise((ok,no)=>{let r=indexedDB.open("badb_db_v21",1);r.onupgradeneeded=e=>{let d=e.target.result;if(!d.objectStoreNames.contains("items"))d.createObjectStore("items",{keyPath:"id"});if(!d.objectStoreNames.contains("viewed"))d.createObjectStore("viewed",{keyPath:"id"})};r.onsuccess=()=>{db=r.result;db.onversionchange=()=>db.close();ok()};r.onerror=()=>no(r.error)})}
+function all(s){return new Promise((ok,no)=>{let r=db.transaction(s,"readonly").objectStore(s).getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+function getOne(s,id){return new Promise((ok,no)=>{let r=db.transaction(s,"readonly").objectStore(s).get(id);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+function put(s,v){return new Promise((ok,no)=>{let tx=db.transaction(s,"readwrite");tx.objectStore(s).put(v);tx.oncomplete=()=>ok();tx.onerror=()=>no(tx.error||new Error("Database save failed"));tx.onabort=()=>no(tx.error||new Error("Database save was cancelled"))})}
+function remove(s,id){return new Promise((ok,no)=>{let tx=db.transaction(s,"readwrite");tx.objectStore(s).delete(id);tx.oncomplete=()=>ok();tx.onerror=()=>no(tx.error||new Error("Delete failed"));tx.onabort=()=>no(tx.error||new Error("Delete was cancelled"))})}
+async function requestPersistentStorage(){try{if(navigator.storage?.persist)await navigator.storage.persist()}catch(e){}}
+function safetyMetadataJson(list){return JSON.stringify(list.map(i=>({...i,photo:null})))}
+function saveSafetyMetadata(list){
+  const json=safetyMetadataJson(list);
+  try{localStorage.setItem("badb_v402_safety",json)}catch(e){}
+  try{if(window.AndroidBridge&&typeof AndroidBridge.saveSafetyMetadata==="function")AndroidBridge.saveSafetyMetadata(json)}catch(e){}
+}
+function readSafetyMetadata(){
+  try{
+    if(window.AndroidBridge&&typeof AndroidBridge.getSafetyMetadata==="function"){
+      const nativeJson=AndroidBridge.getSafetyMetadata();
+      const nativeList=JSON.parse(nativeJson||"[]");
+      if(Array.isArray(nativeList)&&nativeList.length)return nativeList;
+    }
+  }catch(e){}
+  try{return JSON.parse(localStorage.getItem("badb_v402_safety")||"[]")}catch(e){return []}
+}
+async function recoverMetadataIfNeeded(list){
+  const backup=readSafetyMetadata();
+  if(!backup.length)return list;
+  const ids=new Set(list.map(i=>i.id));
+  let changed=false;
+  for(const rec of backup){
+    if(rec?.id && !ids.has(rec.id)){
+      try{await put("items",rec);ids.add(rec.id);changed=true}catch(e){}
+    }
+  }
+  return changed?await all("items"):list;
+}
+function esc(t){return String(t||"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[s]))}
+const photoUrlCache=new WeakMap(),activePhotoUrls=new Set();
+function clearPhotoObjectUrls(){for(const u of activePhotoUrls)URL.revokeObjectURL(u);activePhotoUrls.clear()}
+function image(i){if(i.photo){if(photoUrlCache.has(i.photo))return photoUrlCache.get(i.photo);const u=URL.createObjectURL(i.photo);photoUrlCache.set(i.photo,u);activePhotoUrls.add(u);return u;}let good=i.decision==="good",bad=i.decision==="bad",bg=good?"e8f6ef":bad?"fdecec":"eef1f3",mark=good?"✓":bad?"✕":"•";return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='240'%3E%3Crect width='100%25' height='100%25' fill='%23${bg}'/%3E%3Ctext x='50%25' y='62%25' text-anchor='middle' font-size='110'%3E${mark}%3C/text%3E%3C/svg%3E`}
+function displayName(i){return (i.name||"").trim()||(i.photo?"Photo item":"Untitled item")}
+function badge(i){return i.decision==="good"?`<span class="badge good">Buy Again</span>`:i.decision==="bad"?`<span class="badge bad">Don't Buy Again</span>`:`<span class="badge" style="background:#f0f2f4;color:#59616c">Details not added</span>`}
+function norm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim()}
+function match(text,q){let h=norm(text),terms=norm(q).split(/\s+/).filter(Boolean);return terms.every(t=>h.includes(t))}
+function filtered(){let q=$("q").value,a=items.filter(i=>(filter==="all"||i.decision===filter)&&match(mode==="category"?(i.category||""):[i.name,i.brand,i.notes,i.category,i.shop,i.decision==="good"?"buy again":"",i.decision==="bad"?"don't buy again dont buy again":""].join(" "),q));let s=$("sort").value;return a.sort((x,y)=>s==="newest"?y.createdAt.localeCompare(x.createdAt):s==="oldest"?x.createdAt.localeCompare(y.createdAt):s==="az"?displayName(x).localeCompare(displayName(y)):s==="za"?displayName(y).localeCompare(displayName(x)):(x.category||"").localeCompare(y.category||"")||displayName(x).localeCompare(displayName(y)))}
+function mini(i){return `<div class="mini" data-id="${i.id}"><img data-photo="${i.id}" src="${image(i)}"><h3>${esc(displayName(i))}</h3>${badge(i)}</div>`}
+function card(i){return `<div class="card"><img class="thumb" data-photo="${i.id}" src="${image(i)}"><div class="info"><h3>${esc(displayName(i))}</h3>${badge(i)}${i.brand?`<div class="meta">${esc(i.brand)}</div>`:""}${i.category?`<div class="meta">${esc(i.category)}</div>`:""}<button type="button" class="viewDetails" data-details="${i.id}">View Details ›</button></div></div>`}
+function bind(){document.querySelectorAll("[data-photo]").forEach(x=>x.onclick=e=>{e.stopPropagation();let i=items.find(z=>z.id===x.dataset.photo);$("big").src=image(i);$("modal").classList.remove("hidden")});document.querySelectorAll("[data-details]").forEach(x=>x.onclick=e=>{e.stopPropagation();openDetail(x.dataset.details)});document.querySelectorAll(".mini[data-id]").forEach(x=>x.onclick=()=>openDetail(x.dataset.id))}
+function recentTerms(){try{return JSON.parse(localStorage.getItem("badbRecentSearches")||"[]")}catch(e){return[]}}
+function saveRecentTerm(term){term=term.trim();if(!term)return;let a=recentTerms().filter(x=>x.toLowerCase()!=term.toLowerCase());a.unshift(term);localStorage.setItem("badbRecentSearches",JSON.stringify(a.slice(0,5)));renderRecentSearches()}
+function renderRecentSearches(){let a=recentTerms();$("recentSearchList").innerHTML=a.length?a.map(x=>`<button type="button" class="recentSearchBtn" data-recent="${esc(x)}">${esc(x)}</button>`).join("")+`<button type="button" class="recentSearchBtn" id="clearRecent">${I18N[appLang].clearRecent}</button>`:`<div class="muted" style="margin-top:7px">${I18N[appLang].noRecent}</div>`;document.querySelectorAll("[data-recent]").forEach(b=>b.onclick=()=>{$("q").value=b.dataset.recent;runSearch()});if($("clearRecent"))$("clearRecent").onclick=()=>{localStorage.removeItem("badbRecentSearches");renderRecentSearches()}}
+function clearActiveSearch(){ $("q").value="";filter="all";mode="everything";document.querySelectorAll("[data-mode]").forEach(x=>x.className="pill");let em=document.querySelector('[data-mode="everything"]');if(em)em.classList.add("active","all");document.querySelectorAll("[data-filter]").forEach(x=>x.className="pill");let af=document.querySelector('[data-filter="all"]');if(af)af.classList.add("active","all")}
+function showResults(title,arr){let a=arr||filtered();$("resultsTitle").textContent=title;$("resultsCount").textContent=`${a.length} ${I18N[appLang].itemsFound}`;$("resultsList").innerHTML=a.length?a.map(card).join(""):`<div class="empty"><span data-i18n="noItems">No items found.</span></div>`;currentView="results";show("results");bind();try{history.pushState({badb:true,view:"results"},"",location.href)}catch(e){}}
+function runSearch(recordRecent=true){let term=$("q").value.trim();if(!term)return;if(recordRecent)saveRecentTerm(term);filter="all";showResults(`${I18N[appLang].resultsFor} “${term}”`,filtered())}
+let categorySearchTimer=null;
+function runCategoryLiveSearch(){clearTimeout(categorySearchTimer);categorySearchTimer=setTimeout(()=>{const term=$("q").value.trim();if(mode==="category"&&term.length>=2){filter="all";let a=filtered();$("resultsTitle").textContent=`${I18N[appLang].resultsFor} “${term}”`;$("resultsCount").textContent=`${a.length} ${I18N[appLang].itemsFound}`;$("resultsList").innerHTML=a.length?a.map(card).join(""):`<div class="empty">${I18N[appLang].noItems}</div>`;currentView="results";show("results");bind()}},350)}
+function goHome(){clearActiveSearch();currentView="home";show("home");renderRecentSearches();try{history.pushState({badb:true,view:"home"},"",location.href)}catch(e){}}
+function render(){renderRecentSearches();let a=filtered();$("goodCount").textContent=items.filter(i=>i.decision==="good").length;$("badCount").textContent=items.filter(i=>i.decision==="bad").length;$("count").textContent=appLang==="tr"?`${a.length} ${I18N.tr.items}`:`${a.length} item${a.length===1?"":"s"}`;$("list").innerHTML=a.length?a.map(card).join(""):`<div class="empty">${I18N[appLang].noMatching}</div>`;let r=[...items].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,3);$("recent").innerHTML=r.length?r.map(card).join(""):`<div class="empty">${I18N[appLang].noItemsYet}</div>`;$("welcome").classList.toggle("hidden",items.length>0);bind()}
+function show(id){["home","results","form","detail","settings"].forEach(v=>$(v).classList.toggle("hidden",v!==id));if(id==="home")render()}
+async function preparePhoto(file){
+  if(!file)return null;
+  if(!file.type||!file.type.startsWith("image/"))return file;
+  try{
+    const bitmap=await createImageBitmap(file);
+    const maxSide=1400;
+    const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+    const w=Math.max(1,Math.round(bitmap.width*scale));
+    const h=Math.max(1,Math.round(bitmap.height*scale));
+    const canvas=document.createElement("canvas");
+    canvas.width=w;canvas.height=h;
+    canvas.getContext("2d").drawImage(bitmap,0,0,w,h);
+    if(bitmap.close)bitmap.close();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.80));
+    return blob||file;
+  }catch(e){
+    console.warn("Photo optimisation skipped",e);
+    return file;
+  }
+}
+function reset(){decision="";photo=null;editId=null;currentBarcode="";["name","notes","brand","shop","customCat"].forEach(x=>$(x).value="");categoryValue="";$("catLabel").textContent=I18N[appLang].noCategory;$("catMenu").classList.add("hidden");$("customCat").classList.add("hidden");$("cam").value=$("gal").value="";$("prev").classList.add("hidden");$("quickSave").classList.add("hidden");$("yes").classList.remove("selected");$("no").classList.remove("selected");$("save").textContent="Save Item"}
+async function pick(file){
+  if(!file)return;
+  $("quickSave").disabled=true;
+  try{
+    photo=await preparePhoto(file);
+    $("prev").src=URL.createObjectURL(photo);
+    $("prev").classList.remove("hidden");
+    if(!editId)$("quickSave").classList.remove("hidden");
+  }catch(e){
+    console.error(e);
+    alert("That photo could not be prepared. Please choose it again.");
+  }finally{
+    $("quickSave").disabled=false;
+  }
+}
+const BASE_CATEGORIES=["Food","Drinks","Toiletries","Cleaning","Health","Beauty","Clothing","Household","DIY","Garden","Pets","Electronics","Other"];
+function allCategories(){return [...new Set([...BASE_CATEGORIES,...items.map(i=>i.category).filter(Boolean)])].sort((a,b)=>a.localeCompare(b))}
+function buildCategoryMenu(query=""){let options=[["",I18N[appLang].noCategory],...allCategories().map(c=>[c,c]),["__custom__",I18N[appLang].addNewCategory]];let q=norm(query);if(q)options=options.filter(([v,l])=>v==="__custom__"||norm(l).includes(q));$("catOptions").innerHTML=options.map(([v,l])=>`<button type="button" class="cat-option" data-cat="${esc(v)}">${esc(l)}</button>`).join("");$("catOptions").querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>chooseCategory(b.dataset.cat,b.textContent))}
+function chooseCategory(value,label){categoryValue=value;$("catMenu").classList.add("hidden");if(value==="__custom__"){$("catLabel").textContent=I18N[appLang].newCategory;$("customCat").classList.remove("hidden");$("customCat").focus()}else{$("catLabel").textContent=label||I18N[appLang].noCategory;$("customCat").classList.add("hidden");$("customCat").value=""}}
+function selectedCategory(){return categoryValue==="__custom__"?$("customCat").value.trim():categoryValue.trim()}
+async function saveRecord(rec){
+  if(saving)return;
+  saving=true;
+  $("save").disabled=true;
+  $("quickSave").disabled=true;
+  try{
+    await put("items",rec);
+    const verified=await getOne("items",rec.id);
+    if(!verified)throw new Error("Save verification failed");
+    clearPhotoObjectUrls();
+    items=await all("items");
+    saveSafetyMetadata(items);
+    reset();
+    show("home");
+    $("toast").textContent=`Item saved successfully — ${items.length} item${items.length===1?"":"s"} stored`;
+    $("toast").classList.remove("hidden");
+    setTimeout(()=>$("toast").classList.add("hidden"),2200);
+  }catch(e){
+    console.error(e);
+    let message="This item was NOT saved. Your details and photo are still on screen.";
+    if(e?.name==="QuotaExceededError")message="Storage is full for this app. The item was NOT saved and is still on screen.";
+    alert(message);
+  }finally{
+    saving=false;
+    $("save").disabled=false;
+    $("quickSave").disabled=false;
+  }
+}
+async function saveItem(){let n=$("name").value.trim();if(!n&&!photo&&!editId)return alert("Add a product name or photo before saving.");if(!decision)return alert("Please select Buy Again or Don't Buy Again.");let old=items.find(i=>i.id===editId),rec={id:editId||crypto.randomUUID(),name:n,decision,photo:photo||old?.photo||null,notes:$("notes").value.trim(),brand:$("brand").value.trim(),category:selectedCategory(),shop:$("shop").value.trim(),barcode:currentBarcode||old?.barcode||"",createdAt:old?.createdAt||new Date().toISOString()};await saveRecord(rec)}
+async function quickSavePhoto(){if(!photo)return alert("Take a photo or choose an existing photo first.");if(!decision)return alert("Please select Buy Again or Don't Buy Again.");let rec={id:crypto.randomUUID(),name:"",decision,photo,notes:"",brand:"",category:"",shop:"",barcode:currentBarcode||"",createdAt:new Date().toISOString()};await saveRecord(rec)}
+async function openDetail(id){let i=items.find(x=>x.id===id);$("dphoto").src=image(i);$("dphoto").onclick=()=>{$("big").src=image(i);$("modal").classList.remove("hidden")};$("dname").textContent=displayName(i);$("dbadge").innerHTML=badge(i);$("dfields").innerHTML=[[I18N[appLang].notes.replace(" (optional)",""),i.notes],[I18N[appLang].brand.replace(" (optional)",""),i.brand],[I18N[appLang].category.replace(" (optional)",""),i.category],[I18N[appLang].boughtFrom.replace(" (optional)",""),i.shop],[I18N[appLang].dateAdded,new Date(i.createdAt).toLocaleDateString()]].filter(x=>x[1]).map(x=>`<div class="detailrow"><strong>${esc(x[0])}</strong>${esc(x[1])}</div>`).join("");$("edit").onclick=()=>editItem(id);$("del").onclick=async()=>{if(confirm(I18N[appLang].deleteConfirm)){await remove("items",id);clearPhotoObjectUrls();items=await all("items");saveSafetyMetadata(items);show("home")}};currentView="detail";show("detail");try{history.pushState({badb:true,view:"detail"},"",location.href)}catch(e){}}
+function editItem(id){let i=items.find(x=>x.id===id);editId=id;decision=i.decision||"";photo=i.photo||null;currentBarcode=i.barcode||"";$("name").value=i.name||"";$("notes").value=i.notes||"";$("brand").value=i.brand||"";$("shop").value=i.shop||"";categoryValue=i.category||"";$("catLabel").textContent=i.category||I18N[appLang].noCategory;$("customCat").classList.add("hidden");if(i.photo){$("prev").src=image(i);$("prev").classList.remove("hidden")}$("quickSave").classList.add("hidden");$("yes").classList.toggle("selected",decision==="good");$("no").classList.toggle("selected",decision==="bad");$("save").textContent=I18N[appLang].saveChanges;show("form")}
+
+
+
+
+
+
+const I18N={
+en:{appName:"Buy Again / Don't Buy Again",tagline:"Your information to Yourself",newest:"Newest first",oldest:"Oldest first",categorySort:"Category",noItemsYet:"No items yet.",noMatching:"No matching items.",items:"items",all:"All",latest3:"Latest 3",everySaved:"Every saved item appears below.",savePhotoNow:"Save Photo Now",noCategory:"No category",newCategory:"New category",addNewCategory:"Add new category…",clearRecent:"Clear recent searches",noRecent:"No recent searches yet.",resultsFor:"Results for",dateAdded:"Date added",deleteConfirm:"Delete this item?",saveChanges:"Save Changes",scanPoint:"Point the camera at the product barcode.",home:"⌂ Home",language:"Language",searchItems:"Search your items",recentSearches:"Recent Searches ▼",buyAgain:"Buy Again",dontBuyAgain:"Don't Buy Again",searchEverything:"Search everything",searchCategories:"Search categories",recentlyAdded:"Recently Added",allItems:"All Items",addItem:"＋ Add Item",takePhoto:"📷 Take Photo ⭐ Recommended",choosePhoto:"🖼 Choose Existing Photo",scanBarcode:"Scan Barcode",wouldBuy:"Would you buy it again?",buyAgainCaps:"✓ BUY AGAIN",dontBuyAgainCaps:"✕ DON'T BUY AGAIN",notes:"Notes (optional)",brand:"Brand (optional)",category:"Category (optional)",boughtFrom:"Bought from (optional)",saveItem:"Save Item",cancel:"Cancel",settings:"Settings",backup:"💾 Backup My Items",restore:"♻️ Restore My Items",about:"ℹ️ About the App",welcome:'Welcome to Buy Again / Don’t Buy Again',welcomeText:'Add your item before you forget. It’s quick and easy. Photos are optional.',addFirst:'+ Add Your First Item',navHome:'Home',navAdd:'Add',navSearch:'Search',addItemHeading:'Add Item',photoOptional:'Photo (optional)',productName:'Product name (optional if saving photo only)',searchHeading:'Search',noItems:'No items found.',itemsFound:'items found',viewDetails:'View Details',edit:'Edit',delete:'Delete',close:'Close',productDetails:'Product Details',restoreChoice:'Restore backup',addToExisting:'Add to existing items',replaceExisting:'Replace existing items',cameraTip:'Tip: in your gallery, pull down to reveal Search.',barcodeFound:'Barcode found. Looking up product…',barcodeRecognised:"Barcode recognised — check the details, choose Buy Again or Don't Buy Again, then save.",barcodeNotFound:"Barcode scanned. Product details weren't found — enter them manually.",barcodeUnavailable:"Barcode scanned. Product lookup wasn't available — enter the details manually."},
+tr:{appName:"Tekrar Al / Tekrar Alma",tagline:"Kendiniz için kendi bilgileriniz",newest:"En yeni önce",oldest:"En eski önce",categorySort:"Kategori",noItemsYet:"Henüz ürün yok.",noMatching:"Eşleşen ürün yok.",items:"ürün",all:"Tümü",latest3:"Son 3",everySaved:"Kaydedilen tüm ürünler aşağıda görünür.",savePhotoNow:"Fotoğrafı Şimdi Kaydet",noCategory:"Kategori yok",newCategory:"Yeni kategori",addNewCategory:"Yeni kategori ekle…",clearRecent:"Son aramaları temizle",noRecent:"Henüz son arama yok.",resultsFor:"Sonuçlar",dateAdded:"Eklenme tarihi",deleteConfirm:"Bu ürün silinsin mi?",saveChanges:"Değişiklikleri Kaydet",scanPoint:"Kamerayı ürün barkoduna doğrultun.",home:"⌂ Ana Sayfa",language:"Dil",searchItems:"Ürünlerinizde ara",recentSearches:"Son Aramalar ▼",buyAgain:"Tekrar Al",dontBuyAgain:"Tekrar Alma",searchEverything:"Her yerde ara",searchCategories:"Kategorilerde ara",recentlyAdded:"Son Eklenenler",allItems:"Tüm Ürünler",addItem:"＋ Ürün Ekle",takePhoto:"📷 Fotoğraf Çek ⭐ Önerilen",choosePhoto:"🖼 Mevcut Fotoğrafı Seç",scanBarcode:"Barkod Tara",wouldBuy:"Tekrar alır mıydınız?",buyAgainCaps:"✓ TEKRAR AL",dontBuyAgainCaps:"✕ TEKRAR ALMA",notes:"Notlar (isteğe bağlı)",brand:"Marka (isteğe bağlı)",category:"Kategori (isteğe bağlı)",boughtFrom:"Nereden alındı (isteğe bağlı)",saveItem:"Ürünü Kaydet",cancel:"İptal",settings:"Ayarlar",backup:"💾 Ürünlerimi Yedekle",restore:"♻️ Ürünlerimi Geri Yükle",about:"ℹ️ Uygulama Hakkında",welcome:'Buy Again / Don’t Buy Again’a Hoş Geldiniz',welcomeText:'Unutmadan ürününüzü ekleyin. Hızlı ve kolaydır. Fotoğraf isteğe bağlıdır.',addFirst:'+ İlk Ürününüzü Ekleyin',navHome:'Ana Sayfa',navAdd:'Ekle',navSearch:'Ara',addItemHeading:'Ürün Ekle',photoOptional:'Fotoğraf (isteğe bağlı)',productName:'Ürün adı (yalnızca fotoğraf kaydediyorsanız isteğe bağlı)',searchHeading:'Ara',noItems:'Ürün bulunamadı.',itemsFound:'ürün bulundu',viewDetails:'Ayrıntıları Gör',edit:'Düzenle',delete:'Sil',close:'Kapat',productDetails:'Ürün Ayrıntıları',restoreChoice:'Yedeği geri yükle',addToExisting:'Mevcut ürünlere ekle',replaceExisting:'Mevcut ürünlerin yerine koy',cameraTip:'İpucu: Galerinizde Ara seçeneğini görmek için ekranı aşağı çekin.',barcodeFound:'Barkod bulundu. Ürün aranıyor…',barcodeRecognised:'Barkod tanındı — ayrıntıları kontrol edin, Tekrar Al veya Tekrar Alma seçeneğini seçin ve kaydedin.',barcodeNotFound:'Barkod tarandı. Ürün ayrıntıları bulunamadı — bilgileri elle girin.',barcodeUnavailable:'Barkod tarandı. Ürün araması kullanılamadı — bilgileri elle girin.'}};
+let appLang=localStorage.getItem("badbLanguage")||"en";
+function applyLanguage(lang){appLang=lang==="tr"?"tr":"en";localStorage.setItem("badbLanguage",appLang);document.documentElement.lang=appLang;$("languageSelect").value=appLang;document.querySelectorAll("[data-i18n]").forEach(el=>{let k=el.dataset.i18n;if(I18N[appLang][k]){
+if(k==="welcome") el.innerHTML=appLang==="tr"?"Buy Again / Don’t Buy Again’a Hoş Geldiniz":"Welcome to Buy Again /<br>Don’t Buy Again";
+else if(k==="welcomeText") el.innerHTML=appLang==="tr"?"Unutmadan ürününüzü ekleyin.<br>Hızlı ve kolaydır. Fotoğraf isteğe bağlıdır.":"Add your item before you forget.<br>It’s quick and easy. Photos are optional.";
+else el.textContent=I18N[appLang][k]
+}});document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{let k=el.dataset.i18nPlaceholder;if(I18N[appLang][k])el.placeholder=I18N[appLang][k]})}
+$("languageSelect").onchange=e=>{applyLanguage(e.target.value);buildCategoryMenu();renderRecentSearches();render();const c=$("androidClose");if(c)c.textContent=appLang==="tr"?"Kapat":"Close";};
+function setupAndroidControls(){
+ if(!(window.AndroidBridge&&typeof AndroidBridge.closeApp==="function"))return;
+ const tools=document.querySelector(".topTools");if(!tools||document.getElementById("androidClose"))return;
+ const right=document.createElement("div");right.style.display="flex";right.style.alignItems="center";right.style.gap="7px";
+ const language=tools.querySelector(".languageBox");if(language){tools.removeChild(language);right.appendChild(language)}
+ const b=document.createElement("button");b.id="androidClose";b.className="secondary";b.style.width="auto";b.style.padding="7px 10px";b.textContent=appLang==="tr"?"Kapat":"Close";b.onclick=()=>AndroidBridge.closeApp();right.appendChild(b);tools.appendChild(right);
+}
+
+
+let scanStream=null,scanTimer=null;
+async function stopBarcodeScan(){if(scanTimer){clearTimeout(scanTimer);scanTimer=null}if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}$("scannerVideo").srcObject=null;$("scannerBox").classList.add("hidden")}
+function barcodeKeys(value){const raw=String(value||"").replace(/\s+/g,"");const keys=new Set([raw]);if(/^\d{12}$/.test(raw))keys.add("0"+raw);if(/^0\d{12}$/.test(raw))keys.add(raw.slice(1));return keys}
+function sameBarcode(a,b){const ak=barcodeKeys(a),bk=barcodeKeys(b);for(const k of ak)if(k&&bk.has(k))return true;return false}
+async function lookupBarcode(code){
+  code=String(code||"").trim();
+  if(!code){alert("The barcode was scanned but no number was returned. Please try again.");return;}
+  currentBarcode=code;
+  const previous=items.find(i=>sameBarcode(i.barcode,code));
+  if(previous){
+    const verdict=previous.decision==="good"?"✓ BUY AGAIN":"✕ DON'T BUY AGAIN";
+    const note=previous.notes?`\n\nYour note: “${previous.notes}”`:"";
+    alert(`YOU'VE BOUGHT THIS BEFORE\n\n${verdict}\n${displayName(previous)}${note}`);
+    await openDetail(previous.id);
+    return;
+  }
+  $("scanStatus").textContent=appLang==="tr"?`Barkod ${code} bulundu. Ürün aranıyor…`:`Barcode ${code} found. Looking up product…`;
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),7000);
+  try{
+    const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`,{signal:controller.signal});
+    if(!r.ok)throw new Error("lookup");
+    const d=await r.json(),pr=d.product;
+    if(pr){
+      if(pr.product_name)$("name").value=pr.product_name;
+      if(pr.brands)$("brand").value=pr.brands.split(",")[0].trim();
+      const imageUrl=pr.image_front_url||pr.image_url;
+      if(imageUrl){try{const ir=await fetch(imageUrl);if(ir.ok)await pick(await ir.blob())}catch(e){}}
+      $("toast").textContent=I18N[appLang].barcodeRecognised;
+    }else $("toast").textContent="New product — barcode saved. Enter the details once, choose Buy Again or Don't Buy Again, then save.";
+  }catch(e){
+    $("toast").textContent="New product — barcode saved. Product lookup wasn't available, so enter the details once and save it.";
+  }finally{clearTimeout(timeout)}
+  $("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),5200)
+}
+async function startBarcodeScan(){if(!("BarcodeDetector" in window)){alert("Barcode scanning is not supported by this browser yet. You can take a photo or enter the product details manually.");return}try{const formats=["ean_13","ean_8","upc_a","upc_e","code_128"];const supported=await BarcodeDetector.getSupportedFormats();const use=formats.filter(x=>supported.includes(x));const detector=new BarcodeDetector({formats:use.length?use:undefined});scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});$("scanStatus").textContent=I18N[appLang].scanPoint;$("scannerVideo").srcObject=scanStream;await $("scannerVideo").play();$("scannerBox").classList.remove("hidden");const loop=async()=>{if(!scanStream)return;try{const codes=await detector.detect($("scannerVideo"));if(codes.length){let code=codes[0].rawValue;await stopBarcodeScan();await lookupBarcode(code);return}}catch(e){}scanTimer=setTimeout(loop,180)};loop()}catch(e){await stopBarcodeScan();alert("The camera could not be opened for barcode scanning. You can still take a photo or enter the details manually.")}}
+$("scanBarcode").onclick=()=>{if(window.AndroidBridge&&typeof AndroidBridge.startBarcodeScan==="function")AndroidBridge.startBarcodeScan();else startBarcodeScan()};$("stopScan").onclick=stopBarcodeScan;
+window.androidBarcodeResult=code=>lookupBarcode(String(code));
+window.androidBarcodeCancelled=()=>{};
+window.androidBarcodeFailed=()=>alert("Barcode scan could not be completed. Please try again.");
+
+$("backupItems").onclick=backupMyItems;
+$("restoreItems").onclick=()=>$("restoreFile").click();
+$("restoreFile").onchange=e=>{
+  if(e.target.files?.[0])restoreMyItems(e.target.files[0]);
+  e.target.value="";
+};
+$("aboutApp").onclick=()=>$("aboutBox").classList.toggle("hidden");$("settingsTop").onclick=()=>go("settings");
+
+$("catButton").onclick=()=>{buildCategoryMenu("");$("catMenu").classList.toggle("hidden")};$("catSearch").oninput=e=>buildCategoryMenu(e.target.value);document.addEventListener("click",e=>{if(!e.target.closest(".cat-picker"))$("catMenu").classList.add("hidden")});
+$("add").onclick=$("firstAdd").onclick=()=>{reset();show("form")};$("cancel").onclick=()=>{reset();show("home")};$("save").onclick=saveItem;$("quickSave").onclick=quickSavePhoto;$("cam").onchange=e=>pick(e.target.files[0]);function openExistingPicker(){let ua=navigator.userAgent||"";let isiOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);if(isiOS)$("gal").setAttribute("accept","image/*");else $("gal").removeAttribute("accept");$("gal").click()}
+$("chooseExisting").onclick=()=>{if(localStorage.getItem("badbPickerHelpSeen")==="1")openExistingPicker();else $("pickerHelp").classList.remove("hidden")};$("pickerContinue").onclick=()=>{if($("pickerDontShow").checked)localStorage.setItem("badbPickerHelpSeen","1");$("pickerHelp").classList.add("hidden");openExistingPicker()};$("gal").onchange=e=>{let f=e.target.files?.[0];if(!f)return;if(f.type&&!f.type.startsWith("image/")){alert("Please choose a photo file.");return}pick(f)};$("yes").onclick=()=>{decision="good";$("yes").classList.add("selected");$("no").classList.remove("selected")};$("no").onclick=()=>{decision="bad";$("no").classList.add("selected");$("yes").classList.remove("selected")};$("q").oninput=()=>{if(mode==="category")runCategoryLiveSearch()};$("q").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();runSearch()}};$("searchGo").onclick=runSearch;$("sort").onchange=()=>{if(currentView==="results"){let a=filtered();$("resultsCount").textContent=`${a.length} ${I18N[appLang].itemsFound}`;$("resultsList").innerHTML=a.length?a.map(card).join(""):`<div class="empty">${I18N[appLang].noItems}</div>`;bind()}else render()};
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("[data-mode]").forEach(x=>x.className="pill");b.classList.add("active","all");$("q").placeholder=mode==="category"?"Search categories":"Search your items";if(mode==="category"&&$("q").value.trim().length>=2)runCategoryLiveSearch()});
+document.querySelectorAll("[data-home-filter]").forEach(b=>b.onclick=()=>{clearActiveSearch();filter=b.dataset.homeFilter;showResults(filter==="good"?"Buy Again":"Don't Buy Again",filtered())});
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{clearActiveSearch();filter=b.dataset.filter;if(filter==="all")goHome();else showResults(filter==="good"?"Buy Again":"Don't Buy Again",filtered())});
+document.querySelectorAll("nav button[data-view]").forEach(b=>b.onclick=()=>{if(b.dataset.view==="home")return goHome();if(b.dataset.view==="form")reset();go(b.dataset.view)});$("searchNav").onclick=()=>{goHome();$("q").focus()};$("resultsHome").onclick=goHome;$("close").onclick=()=>$("modal").classList.add("hidden");$("modal").onclick=e=>{if(e.target===$("modal"))$("modal").classList.add("hidden")};
+
+async function blobToDataURL(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=reject;
+    reader.readAsDataURL(blob);
+  });
+}
+async function backupMyItems(){
+  try{
+    const saved=await all("items");
+    const serial=[];
+    for(const item of saved){
+      serial.push({...item,photo:item.photo?await blobToDataURL(item.photo):null});
+    }
+    const payload={
+      app:"Buy Again / Don't Buy Again",
+      version:"4.1.3",
+      exportedAt:new Date().toISOString(),
+      items:serial
+    };
+    const filename=`BuyAgain_Backup_${new Date().toISOString().slice(0,10)}.badb.json`;
+    if(window.AndroidBridge&&typeof AndroidBridge.saveBackup==="function"){
+      window.pendingBackupCount=saved.length;
+      AndroidBridge.saveBackup(JSON.stringify(payload),filename);
+      return;
+    }else{
+      const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+      $("toast").textContent=`Backup created — ${saved.length} item${saved.length===1?"":"s"}`;
+      $("toast").classList.remove("hidden");
+      setTimeout(()=>$("toast").classList.add("hidden"),2200);
+    }
+  }catch(e){
+    console.error(e);
+    alert("The backup could not be created.");
+  }
+}
+window.androidBackupSaved=success=>{const count=Number(window.pendingBackupCount||0);window.pendingBackupCount=0;if(success){$("toast").textContent=`Backup created — ${count} item${count===1?"":"s"}`;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),2200)}else alert("The backup was not saved.")};
+
+async function restoreMyItems(file){
+  try{
+    const payload=JSON.parse(await file.text());
+    if(!payload||!Array.isArray(payload.items))throw new Error("Invalid backup file");
+    const prepared=[];
+    for(const raw of payload.items){
+      if(!raw||typeof raw!=="object")throw new Error("Invalid item in backup");
+      const rec={...raw};
+      if(raw.photo && typeof raw.photo==="string" && raw.photo.startsWith("data:")){
+        rec.photo=await (await fetch(raw.photo)).blob();
+      }else rec.photo=null;
+      if(!rec.id)rec.id=crypto.randomUUID();
+      if(!rec.createdAt)rec.createdAt=new Date().toISOString();
+      prepared.push(rec);
+    }
+    const replace=confirm("Restore backup\n\nOK = REPLACE my existing items\nCancel = ADD backup items to my existing items");
+    const current=await all("items");
+    const existingIds=new Set(current.map(x=>x.id));
+    if(!replace){for(const rec of prepared){if(existingIds.has(rec.id))rec.id=crypto.randomUUID();existingIds.add(rec.id)}}
+    if(replace){
+      const tx=db.transaction("items","readwrite");
+      const store=tx.objectStore("items");
+      store.clear();
+      for(const rec of prepared)store.put(rec);
+      await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error("Restore cancelled"))});
+    }else{
+      for(const rec of prepared)await put("items",rec);
+    }
+    clearPhotoObjectUrls();
+    clearPhotoObjectUrls();
+    items=await all("items");
+    saveSafetyMetadata(items);
+    show("home");
+    $("toast").textContent=`Restore complete — ${items.length} saved`;
+    $("toast").classList.remove("hidden");
+    setTimeout(()=>$("toast").classList.add("hidden"),2200);
+  }catch(e){
+    console.error(e);
+    alert("This backup could not be restored. Your existing items have been left unchanged where possible.");
+  }
+}
+
+let currentView="home";function go(view){currentView=view;show(view);try{history.pushState({badb:true,view},"",location.href)}catch(e){}}try{history.replaceState({badb:true,view:"home"},"",location.href)}catch(e){}window.addEventListener("popstate",e=>{if(!$("modal").classList.contains("hidden")){$("modal").classList.add("hidden");return}currentView=e.state?.view||"home";show(currentView)});(async()=>{await openDB();await requestPersistentStorage();items=await all("items");items=await recoverMetadataIfNeeded(items);saveSafetyMetadata(items);buildCategoryMenu();applyLanguage(appLang);render();setupAndroidControls();if("serviceWorker"in navigator)navigator.serviceWorker.register("service-worker.js").catch(()=>{})})();
+</script>
+</body>
+</html>

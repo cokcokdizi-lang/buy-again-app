@@ -1,0 +1,21 @@
+Buy Again / Don't Buy Again — v4.1.3 reliability hardening
+
+No visual redesign. Existing colours, layout and overall design retained.
+
+Changes in this build:
+- Barcode memory retained and UPC/EAN leading-zero equivalents matched.
+- External Open Food Facts lookup now times out instead of hanging indefinitely.
+- Native barcode cancellation and empty-result handling improved.
+- Android backup reports success only after the destination file is actually written; cancellation reports failure.
+- Pending backup data is held in an app-private temporary file while Android's save picker is open.
+- Restore validates/prepares incoming records before replacing existing data; replacement is performed in one IndexedDB transaction so failure can roll back.
+- Category live search is debounced slightly and partial typing is not added to Recent Searches/history. Explicit Search/Enter still records the search.
+- Sorting on filtered results works even when the search box is empty.
+- Photo object URLs are reused/revoked to reduce long-session memory growth.
+- WebView navigation is restricted to the packaged app origin while AndroidBridge is exposed.
+- Safety metadata keeps a .bak fallback copy.
+- Old temporary camera files are cleaned after 24 hours.
+- Visible app/backup version aligned to 4.1.3. Internal IndexedDB/localStorage keys intentionally remain unchanged to preserve existing user data.
+- Service-worker cache name advanced for this build.
+
+Still requires device testing before Play Store release.
