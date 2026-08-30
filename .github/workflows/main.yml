@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
 
       - name: Extract project
-        run: unzip TEST_2_TICK_CROSS_FIX_BuyAgain.zip -d android-project
+        run: unzip TEST_2_INSTALL_FIX_BuyAgain.zip -d android-project
 
       - name: Build APK
         working-directory: android-project/TEST_BuyAgain_4.1.3_Project
