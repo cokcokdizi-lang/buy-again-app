@@ -1,10 +1,10 @@
 name: Build BuyAgain APK
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,19 +14,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Extract project
-        run: unzip  TEST_BuyAgain_4.2_LATEST.zip -d android-project
+        run: unzip TEST_2_TICK_CROSS_FIX_BuyAgain.zip -d android-project
 
       - name: Build APK
         working-directory: android-project/TEST_BuyAgain_4.1.3_Project
         run: |
-          gradle assembleDebug
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
