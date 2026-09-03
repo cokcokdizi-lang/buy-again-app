@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
 
       - name: Extract project
-        run: unzip LATEST_BUYAGAIN_TEST3_9_CORRECTIONS_READY_FOR_GITHUB_2026-08-30.zip -d android-project
+        run: unzip TEST_4_LATEST_BUYAGAIN_FINAL_TEST_READY_FOR_GITHUB_2026-09-03.zip  -d android-project
 
       - name: Build APK
         working-directory: android-project/TEST_BuyAgain_4.1.3_Project
