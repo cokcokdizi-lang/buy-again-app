@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
 
       - name: Extract project
-        run: unzip BuyAgain_4.2_Backup_And_Share_Fixes_SOURCE_UNTESTED.zip  -d android-project
+        run: unzip  BuyAgain_Backup_And_Share_Test_SEPARATE_SOURCE.zip -d android-project
 
       - name: Build APK
         working-directory: android-project/TEST_BuyAgain_4.1.3_Project
